@@ -1,0 +1,66 @@
+# CVS Gen Server Settings
+server.port: 9000
+
+# Mail Server Configuration
+spring.mail:
+    host: smtp.gmail.com
+    username: customer.value.test.mail@gmail.com
+    password: customervalue123456
+    properties.mail.smtp:
+        auth: true
+        socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+            fallback: false
+
+# Redis Server Configuration
+spring.redis:
+    host: 192.168.0.4
+    password: null
+    port: 6379
+
+# MySQL Database Configuration
+spring.datasource:
+    # CVS DB
+    url: jdbc:mysql://localhost:3306/cvs
+    # url: jdbc:mysql://192.168.0.5:3306/cvs
+    username: cvs
+    password: cvs
+    driverClassName: com.mysql.jdbc.Driver
+
+spring.jpa:
+    database: MYSQL
+    show-sql: false
+    hibernate.ddl-auto: create
+    hibernate.naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
+    properties:
+        hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+        javax.persistence.validation.mode: none
+
+# Spring Security Configuration
+#security:
+#    basic.enabled: true
+#    user:
+#        name: nginx
+#        password: nginx
+
+# Data Upload Size
+multipart:
+    maxFileSize: 512Mb
+    maxRequestSize: 515Mb
+    location: "c:/cvs/temp"
+    # location: "/home/gkallergis/cvs/temp"
+    fileSizeThreshold: 16Mb
+
+# Logging Configuration
+logging:
+    file: log/system.log
+    level:
+        se.customervalue.cvs: DEBUG
+        org.springframework:
+            web: INFO
+            boot: INFO
+            core: INFO
+            data: INFO
+        org.hibernate:
+            type: INFO
