@@ -24,9 +24,9 @@ public class APIErrorHandler {
 		return  new APIResponseRepresentation("G01", "The requested employee was not found! Cannot generate report!");
 	}
 
-	@ExceptionHandler(ProductNotFoundException.class)
+	@ExceptionHandler(OwnedProductNotFoundException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public APIResponseRepresentation productNotFoundExceptionHandler(ProductNotFoundException ex) {
+	public APIResponseRepresentation productNotFoundExceptionHandler(OwnedProductNotFoundException ex) {
 		return  new APIResponseRepresentation("G02", "The requested product was not found! Cannot generate report!");
 	}
 
@@ -36,9 +36,9 @@ public class APIErrorHandler {
 		return  new APIResponseRepresentation("G03", "The requested batch of transactions was not found! Cannot generate report!");
 	}
 
-	@ExceptionHandler(ReportGenerationException.class)
+	@ExceptionHandler(UnknownProductTypeException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public APIResponseRepresentation reportGenerationExceptionHandler(ReportGenerationException ex) {
-		return  new APIResponseRepresentation("G04", "There was an error while generating the report! Generation failed!");
+	public APIResponseRepresentation unknownProductTypeExceptionHandler(UnknownProductTypeException ex) {
+		return  new APIResponseRepresentation("G04", "The requested product is not currently supported by the system!");
 	}
 }

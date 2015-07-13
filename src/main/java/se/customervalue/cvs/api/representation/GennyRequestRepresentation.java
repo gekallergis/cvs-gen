@@ -1,42 +1,42 @@
 package se.customervalue.cvs.api.representation;
 
 public class GennyRequestRepresentation {
-	private int salesPeriodId;
-	private int EmployeeId;
-	private int CompanyId;
-	private String productType;
+	private int salesDataId;
+	private int employeeId;
+	private int companyId;
+	private int ownedProductId;
 
 	public GennyRequestRepresentation() {}
 
-	public int getSalesPeriodId() {
-		return salesPeriodId;
+	public int getSalesDataId() {
+		return salesDataId;
 	}
 
-	public void setSalesPeriodId(int salesPeriodId) {
-		this.salesPeriodId = salesPeriodId;
+	public void setSalesDataId(int salesDataId) {
+		this.salesDataId = salesDataId;
 	}
 
 	public int getEmployeeId() {
-		return EmployeeId;
+		return employeeId;
 	}
 
 	public void setEmployeeId(int employeeId) {
-		EmployeeId = employeeId;
+		this.employeeId = employeeId;
 	}
 
 	public int getCompanyId() {
-		return CompanyId;
+		return companyId;
 	}
 
 	public void setCompanyId(int companyId) {
-		CompanyId = companyId;
+		this.companyId = companyId;
 	}
 
-	public String getProductType() {
-		return productType;
+	public int getOwnedProductId() {
+		return ownedProductId;
 	}
 
-	public void setProductType(String productType) {
-		this.productType = productType;
+	public void setOwnedProductId(int ownedProductId) {
+		this.ownedProductId = ownedProductId;
 	}
 }

@@ -1,5 +1,10 @@
-# CVS Gen Server Settings
-server.port: 9000
+# CVS Gen Embedded Server Settings
+server:
+    port: 9000
+    tomcat:
+        basedir: log/tomcat.log
+        access-log-enabled: true
+        access-log-pattern: '[%a on %U:%p] %H %m %q | %s'
 
 # Mail Server Configuration
 spring.mail:

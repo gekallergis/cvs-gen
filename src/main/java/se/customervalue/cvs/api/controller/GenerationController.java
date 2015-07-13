@@ -14,8 +14,9 @@ public class GenerationController {
 	@Autowired
 	private GenerationService generationService;
 
-	@RequestMapping(value = "/report", method = RequestMethod.GET)
-	public APIResponseRepresentation generateReportEndpoint(@RequestBody @Valid GennyRequestRepresentation report) throws CompanyNotFoundException, EmployeeNotFoundException, ProductNotFoundException, SalesDataNotFoundException, ReportGenerationException {
-		return generationService.generate(report);
+	@RequestMapping(value = "/report", method = RequestMethod.POST)
+	public APIResponseRepresentation generateReportEndpoint(@RequestBody @Valid GennyRequestRepresentation request) throws CompanyNotFoundException, EmployeeNotFoundException, OwnedProductNotFoundException, SalesDataNotFoundException, ReportGenerationException, UnknownProductTypeException {
+		generationService.generate(request);
+		return new APIResponseRepresentation("020", "Report generation started successfully!");
 	}
 }
