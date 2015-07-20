@@ -13,11 +13,6 @@ public class ProductGeneratorPredictive implements ProductGenerator {
 
 	@Override @Async
 	public void start(GennyRequestRepresentation request) {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		log.warn("[Predictive] Started!");
 	}
 
