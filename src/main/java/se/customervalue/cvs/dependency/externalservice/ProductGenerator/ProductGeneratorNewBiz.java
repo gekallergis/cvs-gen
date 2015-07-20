@@ -27,16 +27,17 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 
 		List<Transaction> transactions = new ArrayList<>();
 
+		long startTime = System.nanoTime();
 		transactions = transactionRepository.findAll();
-
-		log.warn("[NewBiz] " + transactions.get(540).getAmount() + " " + transactions.size());
 
 		BigDecimal sum = new BigDecimal("0.00");
 		for (Transaction transaction : transactions) {
 			sum = sum.add(transaction.getAmount());
 		}
 
-		log.warn("[NewBiz] Total is " + sum);
+		long endTime = System.nanoTime();
+		long duration = (endTime - startTime) / 1000000;
+		log.warn("[NewBiz] Total is " + sum + " and it was calculated in " + duration + "ms");
 
 		// TODO: Update DB with new Report (status: generating)
 		// TODO: Perform analysis
