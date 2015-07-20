@@ -7,6 +7,4 @@ import se.customervalue.cvs.domain.Transaction;
 import javax.transaction.Transactional;
 
 @Transactional
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-	Long countBySalesDataBatch(SalesData salesData);
-}
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {}

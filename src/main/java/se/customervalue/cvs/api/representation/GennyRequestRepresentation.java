@@ -5,6 +5,8 @@ public class GennyRequestRepresentation {
 	private int employeeId;
 	private int companyId;
 	private int ownedProductId;
+	private int languageId;
+	private int currencyId;
 
 	public GennyRequestRepresentation() {}
 
@@ -38,5 +40,21 @@ public class GennyRequestRepresentation {
 
 	public void setOwnedProductId(int ownedProductId) {
 		this.ownedProductId = ownedProductId;
+	}
+
+	public int getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(int languageId) {
+		this.languageId = languageId;
+	}
+
+	public int getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(int currencyId) {
+		this.currencyId = currencyId;
 	}
 }
