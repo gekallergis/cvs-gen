@@ -10,6 +10,7 @@ import java.util.List;
 
 @Transactional
 public interface ReportRepository extends JpaRepository<Report, Long> {
+	Report findByReportId(int reportId);
 	List<Report> findByReporter(Employee employee);
 	List<Report> findByCompany(Company company);
 }

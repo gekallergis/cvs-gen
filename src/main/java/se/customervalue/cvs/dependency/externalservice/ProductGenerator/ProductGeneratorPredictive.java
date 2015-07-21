@@ -12,7 +12,7 @@ public class ProductGeneratorPredictive implements ProductGenerator {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override @Async
-	public void start(GennyRequestRepresentation request) {
+	public void start(GennyRequestRepresentation request, int newReportId) {
 		log.warn("[Predictive] Started!");
 	}
 

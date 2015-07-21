@@ -6,4 +6,6 @@ import se.customervalue.cvs.domain.Currency;
 import javax.transaction.Transactional;
 
 @Transactional
-public interface CurrencyRepository extends JpaRepository<Currency, Long> {}
+public interface CurrencyRepository extends JpaRepository<Currency, Long> {
+	Currency findByCurrencyId(int currencyId);
+}
