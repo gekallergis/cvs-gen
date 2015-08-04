@@ -1,4 +1,4 @@
-package se.customervalue.cvs.dependency.externalservice.ProductGenerator;
+package se.customervalue.cvs.dependency.externalservice.ProductGenerator.NewBiz;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.customervalue.cvs.abstraction.externalservice.ExchangeRateService.ExchangeRateService;
 import se.customervalue.cvs.abstraction.externalservice.ExchangeRateService.exception.ExchangeRateException;
-import se.customervalue.cvs.common.CVSConfig;
 import se.customervalue.cvs.dependency.externalservice.Fixer.representation.FixerResponseRepresentation;
 import se.customervalue.cvs.domain.Currency;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Service
 public class Fixer implements ExchangeRateService {
@@ -34,6 +32,7 @@ public class Fixer implements ExchangeRateService {
 			ResponseEntity<FixerResponseRepresentation> response = restTemplate.exchange(FIXER_ENDPOINT + base.getISO4217(), HttpMethod.GET, requestEntity, FixerResponseRepresentation.class);
 
 			cache = response.getBody();
+			cache.getRates().put(base.getISO4217(), new BigDecimal("1.00"));
 		} catch (Exception ex) {
 			throw new ExchangeRateException();
 		}
