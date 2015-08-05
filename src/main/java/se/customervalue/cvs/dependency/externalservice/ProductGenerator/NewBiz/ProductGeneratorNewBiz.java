@@ -118,17 +118,37 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			// Process OLDKUND
 			analysisData.updateOldkund();
 
-			// TODO: Calculate FIRSTTRANS
-			// TODO: Calculate ANTRETUR
-			// TODO: Calculate MIN_DATE
-			// TODO: Calculate MAX_DATE
-			// TODO: Calculate NYK_COHORT
-			// TODO: Calculate ORD_OMS0
-			// TODO: Calculate NYKUND_REAL0
-			// TODO: Calculate NYKUND_NOLL0
-			// TODO: Calculate ANTTRANS0
+			// Process FIRSTTRANS
+			analysisData.updateFirsttrans();
+
+			// Process ANTRETUR
+			analysisData.setAntretur(transactionRepository.getANTRETUR(viewName));
+
+			// Process MIN_DATE
+			analysisData.setMin_date(transactionRepository.getMIN_DATE(viewName));
+
+			// Process MAX_DATE
+			analysisData.setMax_date(transactionRepository.getMAX_DATE(viewName));
+
+			// Process NYK_COHORT
+			analysisData.updateNyk_cohort();
+
+			// Process ORD_OMS0
+			analysisData.updateOrd_oms0();
+
+			// Process NYKUND_REAL0
+			analysisData.updateNykund_real0();
+
+			// Process NYKUND_NOLL0
+			analysisData.updateNykund_noll0();
+
+			// Process ANTTRANS0
+			analysisData.updateAnttrans0();
+
+			// Process ANTKUND0
+			analysisData.updateAntkund0();
+
 			// TODO: Calculate ANTRETUR0
-			// TODO: Calculate ANTKUND0
 			// TODO: Calculate ORD_OMS3
 			// TODO: Calculate OLDKUND_REAL3
 			// TODO: Calculate OLDKUND_NOLL3

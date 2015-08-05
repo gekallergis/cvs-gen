@@ -240,8 +240,6 @@ public class NewBizAnalysisData {
 			int i = getDateIndex(toDate((int) row[IDX.YEAR], (int) row[IDX.MONTH]));
 			oldkund_real[i] = ((BigInteger)row[IDX.OLDKUND_REAL]).intValue();
 		}
-
-		log.warn("[oldkund_real] " + Arrays.toString(oldkund_real));
 	}
 
 	public void setOldkund_noll(List<Object[]> dbData) {
@@ -249,16 +247,73 @@ public class NewBizAnalysisData {
 			int i = getDateIndex(toDate((int) row[IDX.YEAR], (int) row[IDX.MONTH]));
 			oldkund_noll[i] = ((BigInteger)row[IDX.OLDKUND_NOLL]).intValue();
 		}
-
-		log.warn("[oldkund_noll] " + Arrays.toString(oldkund_noll));
 	}
 
 	public void updateOldkund() {
 		for(int i = 0; i < oldkund.length; i++) {
 			oldkund[i] = oldkund_real[i] + oldkund_noll[i];
 		}
+	}
 
-		log.warn("[oldkund] " + Arrays.toString(oldkund));
+	public void updateFirsttrans() {
+		for(int i = 0; i < firsttrans.length; i++) {
+			firsttrans[i] = nykund[i];
+		}
+	}
+
+	public void setAntretur(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate((int) row[IDX.YEAR], (int) row[IDX.MONTH]));
+			antretur[i] = ((BigInteger)row[IDX.ANTRETUR]).intValue();
+		}
+	}
+
+	public void setMin_date(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate((int) row[IDX.YEAR], (int) row[IDX.MONTH]));
+			min_date[i] = toDate(((BigInteger) row[IDX.MIN_DATE_YEAR]).intValue(), ((BigInteger) row[IDX.MIN_DATE_MONTH]).intValue(), ((BigInteger) row[IDX.MIN_DATE_DAY]).intValue());
+		}
+	}
+
+	public void setMax_date(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate((int) row[IDX.YEAR], (int) row[IDX.MONTH]));
+			max_date[i] = toDate(((BigInteger) row[IDX.MAX_DATE_YEAR]).intValue(), ((BigInteger) row[IDX.MAX_DATE_MONTH]).intValue(), ((BigInteger) row[IDX.MAX_DATE_DAY]).intValue());
+		}
+	}
+
+	public void updateNyk_cohort() {
+		ord_mon.forEach((date, index) -> nyk_cohort[index.intValue()] = date);
+	}
+
+	public void updateOrd_oms0() {
+		for(int i = 0; i < ord_oms0.length; i++) {
+			ord_oms0[i] = first_oms[i];
+		}
+	}
+
+	public void updateNykund_real0() {
+		for(int i = 0; i < nykund_real0.length; i++) {
+			nykund_real0[i] = nykund_real[i];
+		}
+	}
+
+	public void updateNykund_noll0() {
+		for(int i = 0; i < nykund_noll0.length; i++) {
+			nykund_noll0[i] = nykund_noll[i];
+		}
+	}
+
+	public void updateAnttrans0() {
+		for(int i = 0; i < anttrans0.length; i++) {
+			anttrans0[i] = firsttrans[i];
+		}
+	}
+
+	public void updateAntkund0() {
+		for(int i = 0; i < antkund0.length; i++) {
+			antkund0[i] = firsttrans[i];
+		}
 	}
 
 	private Date toDate(int year, int month, int day) {
