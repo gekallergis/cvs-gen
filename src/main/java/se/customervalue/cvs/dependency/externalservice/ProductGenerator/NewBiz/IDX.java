@@ -30,6 +30,8 @@ public class IDX {
 	public static final int MAX_DATE_YEAR = 2;
 	public static final int MAX_DATE_MONTH = 3;
 	public static final int MAX_DATE_DAY = 4;
+	public static final int ANTRETUR0_CONSUMERID = 2;
+	public static final int ANTRETUR0_AMOUNTS = 3;
 
 	private IDX(){
 		// This prevents instantiation of this class by mistake!

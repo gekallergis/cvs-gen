@@ -275,13 +275,6 @@ public class NewBizAnalysisData {
 		}
 	}
 
-	public void setMax_date(List<Object[]> dbData) {
-		for (Object[] row : dbData) {
-			int i = getDateIndex(toDate((int) row[IDX.YEAR], (int) row[IDX.MONTH]));
-			max_date[i] = toDate(((BigInteger) row[IDX.MAX_DATE_YEAR]).intValue(), ((BigInteger) row[IDX.MAX_DATE_MONTH]).intValue(), ((BigInteger) row[IDX.MAX_DATE_DAY]).intValue());
-		}
-	}
-
 	public void updateNyk_cohort() {
 		ord_mon.forEach((date, index) -> nyk_cohort[index.intValue()] = date);
 	}
@@ -314,6 +307,69 @@ public class NewBizAnalysisData {
 		for(int i = 0; i < antkund0.length; i++) {
 			antkund0[i] = firsttrans[i];
 		}
+	}
+
+	public void setMax_date(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate((int) row[IDX.YEAR], (int) row[IDX.MONTH]));
+			max_date[i] = toDate(((BigInteger) row[IDX.MAX_DATE_YEAR]).intValue(), ((BigInteger) row[IDX.MAX_DATE_MONTH]).intValue(), ((BigInteger) row[IDX.MAX_DATE_DAY]).intValue());
+		}
+	}
+
+	public void setAntretur0(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((BigInteger)row[IDX.YEAR]).intValue(), ((BigInteger)row[IDX.MONTH]).intValue()));
+			String[] splitAmounts = ((String)row[IDX.ANTRETUR0_AMOUNTS]).split(",");
+			BigDecimal[] amounts = convertAmounts(splitAmounts);
+			if(initTransactionHasReturns(amounts)) {
+				antretur0[i]++;
+			}
+		}
+
+		log.warn("[NBAD] antretur0 " + Arrays.toString(antretur0));
+	}
+
+	private boolean initTransactionHasReturns(BigDecimal[] amounts) {
+		boolean initHasReturns = false;
+		boolean foundCompleteRefund = false;
+		for(int i = amounts.length - 1; i > 0; i--) {
+			if(amounts[i].compareTo(BigDecimal.ZERO) < 0) {
+				for(int j = i - 1; j >= 0; j--) {
+					if(amounts[i].abs().compareTo(amounts[j]) == 0) {
+						if(j == 0) {
+							initHasReturns = true;
+						} else {
+							foundCompleteRefund = true;
+							break;
+						}
+					}
+				}
+
+				if(!foundCompleteRefund) {
+					for(int j = i - 1; j >= 0; j--) {
+						if (amounts[i].abs().compareTo(amounts[j]) < 0) {
+							if (j == 0) {
+								initHasReturns = true;
+							} else {
+								break;
+							}
+						}
+					}
+				}
+				foundCompleteRefund = false;
+			}
+		}
+
+		return initHasReturns;
+	}
+
+	private BigDecimal[] convertAmounts(String[] stringAmounts) {
+		BigDecimal[] amounts = new BigDecimal[stringAmounts.length];
+		for(int i = 0; i < stringAmounts.length; i++) {
+			amounts[i] = new BigDecimal(stringAmounts[i]);
+		}
+
+		return amounts;
 	}
 
 	private Date toDate(int year, int month, int day) {

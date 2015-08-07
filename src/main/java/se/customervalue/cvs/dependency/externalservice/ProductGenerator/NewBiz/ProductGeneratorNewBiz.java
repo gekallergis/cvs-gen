@@ -148,7 +148,9 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			// Process ANTKUND0
 			analysisData.updateAntkund0();
 
-			// TODO: Calculate ANTRETUR0
+			// Process ANTRETUR0
+			analysisData.setAntretur0(transactionRepository.getANTRETUR0(viewName));
+
 			// TODO: Calculate ORD_OMS3
 			// TODO: Calculate OLDKUND_REAL3
 			// TODO: Calculate OLDKUND_NOLL3

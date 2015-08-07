@@ -54,4 +54,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
 	@Query(value = "call oldkund_noll(?1);", nativeQuery = true)
 	List<Object[]> getOLDKUND_NOLL(String companyViewName);
+
+	@Query(value = "call antretur0(?1);", nativeQuery = true)
+	List<Object[]> getANTRETUR0(String companyViewName);
 }
