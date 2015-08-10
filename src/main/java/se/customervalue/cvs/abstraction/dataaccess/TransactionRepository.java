@@ -57,4 +57,19 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
 	@Query(value = "call antretur0(?1);", nativeQuery = true)
 	List<Object[]> getANTRETUR0(String companyViewName);
+
+	@Query(value = "call ord_omsn(?1 , ?2);", nativeQuery = true)
+	List<Object[]> getORD_OMSN(String companyViewName, String duration);
+
+	@Query(value = "call oldkund_realn(?1 , ?2);", nativeQuery = true)
+	List<Object[]> getOLDKUND_REALN(String companyViewName, String duration);
+
+	@Query(value = "call oldkund_nolln(?1 , ?2);", nativeQuery = true)
+	List<Object[]> getOLDKUND_NOLLN(String companyViewName, String duration);
+
+	@Query(value = "call anttransn(?1 , ?2);", nativeQuery = true)
+	List<Object[]> getANTTRANSN(String companyViewName, String duration);
+
+	@Query(value = "call antreturn(?1 , ?2);", nativeQuery = true)
+	List<Object[]> getANTRETURN(String companyViewName, String duration);
 }

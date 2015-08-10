@@ -151,25 +151,59 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			// Process ANTRETUR0
 			analysisData.setAntretur0(transactionRepository.getANTRETUR0(viewName));
 
-			// TODO: Calculate ORD_OMS3
-			// TODO: Calculate OLDKUND_REAL3
-			// TODO: Calculate OLDKUND_NOLL3
-			// TODO: Calculate ANTTRANS3
-			// TODO: Calculate ANTRETUR3
-			// TODO: Calculate ANTKUND3
-			// TODO: Calculate ORD_OMS12
-			// TODO: Calculate OLDKUND_REAL12
-			// TODO: Calculate OLDKUND_NOLL12
-			// TODO: Calculate ANTTRANS12
-			// TODO: Calculate ANTRETUR12
-			// TODO: Calculate ANTKUND12
-			// TODO: Calculate ORD_OMS24
-			// TODO: Calculate OLDKUND_REAL24
-			// TODO: Calculate OLDKUND_NOLL24
-			// TODO: Calculate ANTTRANS24
-			// TODO: Calculate ANTRETUR24
-			// TODO: Calculate ANTKUND24
+			// Process ORD_OMS3
+			analysisData.setOrd_oms3(transactionRepository.getORD_OMSN(viewName, "3"));
 
+			// Process OLDKUND_REAL3
+			analysisData.setOldkund_real3(transactionRepository.getOLDKUND_REALN(viewName, "3"));
+
+			// Process OLDKUND_NOLL3
+			analysisData.setOldkund_noll3(transactionRepository.getOLDKUND_NOLLN(viewName, "3"));
+
+			// Process ANTTRANS3
+			analysisData.setAnttrans3(transactionRepository.getANTTRANSN(viewName, "3"));
+
+			// Process ANTRETUR3
+			analysisData.setAntretur3(transactionRepository.getANTRETURN(viewName, "3"));
+
+			// Process ANTKUND3
+			analysisData.updateAntkund3();
+
+			// Process ORD_OMS12
+			analysisData.setOrd_oms12(transactionRepository.getORD_OMSN(viewName, "12"));
+
+			// Process OLDKUND_REAL12
+			analysisData.setOldkund_real12(transactionRepository.getOLDKUND_REALN(viewName, "12"));
+
+			// Process OLDKUND_NOLL12
+			analysisData.setOldkund_noll12(transactionRepository.getOLDKUND_NOLLN(viewName, "12"));
+
+			// Process ANTTRANS12
+			analysisData.setAnttrans12(transactionRepository.getANTTRANSN(viewName, "12"));
+
+			// Process ANTRETUR12
+			analysisData.setAntretur12(transactionRepository.getANTRETURN(viewName, "12"));
+
+			// Process ANTKUND12
+			analysisData.updateAntkund12();
+
+			// Process ORD_OMS24
+			analysisData.setOrd_oms24(transactionRepository.getORD_OMSN(viewName, "24"));
+
+			// Process OLDKUND_REAL24
+			analysisData.setOldkund_real24(transactionRepository.getOLDKUND_REALN(viewName, "24"));
+
+			// Process OLDKUND_NOLL24
+			analysisData.setOldkund_noll24(transactionRepository.getOLDKUND_NOLLN(viewName, "24"));
+
+			// Process ANTTRANS24
+			analysisData.setAnttrans24(transactionRepository.getANTTRANSN(viewName, "24"));
+
+			// Process ANTRETUR24
+			analysisData.setAntretur24(transactionRepository.getANTRETURN(viewName, "24"));
+
+			// Process ANTKUND24
+			analysisData.updateAntkund24();
 
 //			res = transactionRepository.getACK_OMS("CompanyATransactions");
 //			for (Object[] re : res) {

@@ -32,6 +32,14 @@ public class IDX {
 	public static final int MAX_DATE_DAY = 4;
 	public static final int ANTRETUR0_CONSUMERID = 2;
 	public static final int ANTRETUR0_AMOUNTS = 3;
+	public static final int COHORT_YEAR = 0;
+	public static final int COHORT_MONTH = 1;
+	public static final int ORD_OMSN = 2;
+	public static final int OLDKUND_REALN = 2;
+	public static final int OLDKUND_NOLLN = 2;
+	public static final int ANTTRANSN = 2;
+	public static final int ANTRETURN = 2;
+
 
 	private IDX(){
 		// This prevents instantiation of this class by mistake!

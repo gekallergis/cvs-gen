@@ -325,8 +325,160 @@ public class NewBizAnalysisData {
 				antretur0[i]++;
 			}
 		}
+	}
 
-		log.warn("[NBAD] antretur0 " + Arrays.toString(antretur0));
+	public void setOrd_oms3(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			ord_oms3[i] = ((BigDecimal)row[IDX.ORD_OMSN]);
+		}
+		zeroNonApplicableDates(3, ord_oms3);
+	}
+
+	public void setOldkund_real3(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			oldkund_real3[i] = ((BigInteger)row[IDX.OLDKUND_REALN]).intValue();
+		}
+		zeroNonApplicableDates(3, oldkund_real3);
+	}
+
+	public void setOldkund_noll3(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			oldkund_noll3[i] = ((int)row[IDX.OLDKUND_NOLLN]);
+		}
+		zeroNonApplicableDates(3, oldkund_noll3);
+	}
+
+	public void setAnttrans3(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			anttrans3[i] = ((BigDecimal)row[IDX.ANTTRANSN]).intValue();
+		}
+		zeroNonApplicableDates(3, anttrans3);
+	}
+
+	public void setAntretur3(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			antretur3[i] = ((BigDecimal)row[IDX.ANTRETURN]).intValue();
+		}
+		zeroNonApplicableDates(3, antretur3);
+	}
+
+	public void updateAntkund3() {
+		for(int i = 0; i < antkund3.length; i++) {
+			antkund3[i] = oldkund_real3[i] + oldkund_noll3[i];
+		}
+	}
+
+	public void setOrd_oms12(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			ord_oms12[i] = ((BigDecimal)row[IDX.ORD_OMSN]);
+		}
+		zeroNonApplicableDates(12, ord_oms12);
+	}
+
+	public void setOldkund_real12(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			oldkund_real12[i] = ((BigInteger)row[IDX.OLDKUND_REALN]).intValue();
+		}
+		zeroNonApplicableDates(12, oldkund_real12);
+	}
+
+	public void setOldkund_noll12(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			oldkund_noll12[i] = ((int)row[IDX.OLDKUND_NOLLN]);
+		}
+		zeroNonApplicableDates(12, oldkund_noll12);
+	}
+
+	public void setAnttrans12(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			anttrans12[i] = ((BigDecimal)row[IDX.ANTTRANSN]).intValue();
+		}
+		zeroNonApplicableDates(12, anttrans12);
+	}
+
+	public void setAntretur12(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			antretur12[i] = ((BigDecimal)row[IDX.ANTRETURN]).intValue();
+		}
+		zeroNonApplicableDates(12, antretur12);
+	}
+
+	public void updateAntkund12() {
+		for(int i = 0; i < antkund12.length; i++) {
+			antkund12[i] = oldkund_real12[i] + oldkund_noll12[i];
+		}
+	}
+
+	public void setOrd_oms24(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			ord_oms24[i] = ((BigDecimal)row[IDX.ORD_OMSN]);
+		}
+		zeroNonApplicableDates(24, ord_oms24);
+	}
+
+	public void setOldkund_real24(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			oldkund_real24[i] = ((BigInteger)row[IDX.OLDKUND_REALN]).intValue();
+		}
+		zeroNonApplicableDates(24, oldkund_real24);
+	}
+
+	public void setOldkund_noll24(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			oldkund_noll24[i] = ((int)row[IDX.OLDKUND_NOLLN]);
+		}
+		zeroNonApplicableDates(24, oldkund_noll24);
+	}
+
+	public void setAnttrans24(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			anttrans24[i] = ((BigDecimal)row[IDX.ANTTRANSN]).intValue();
+		}
+		zeroNonApplicableDates(24, anttrans24);
+	}
+
+	public void setAntretur24(List<Object[]> dbData) {
+		for (Object[] row : dbData) {
+			int i = getDateIndex(toDate(((int) row[IDX.COHORT_YEAR]), ((int) row[IDX.COHORT_MONTH])));
+			antretur24[i] = ((BigDecimal)row[IDX.ANTRETURN]).intValue();
+		}
+		zeroNonApplicableDates(24, antretur24);
+	}
+
+	public void updateAntkund24() {
+		for(int i = 0; i < antkund24.length; i++) {
+			antkund24[i] = oldkund_real24[i] + oldkund_noll24[i];
+		}
+	}
+
+	private void zeroNonApplicableDates(int duration, int[] array) {
+		if(array.length < duration) {
+			Arrays.fill(array, 0);
+		} else {
+			Arrays.fill(array, nyk_cohort.length - (duration - 1), nyk_cohort.length, 0);
+		}
+	}
+
+	private void zeroNonApplicableDates(int duration, Object[] array) {
+		if(array.length < duration) {
+			Arrays.fill(array, new BigDecimal("0.00"));
+		} else {
+			Arrays.fill(array, nyk_cohort.length - (duration - 1), nyk_cohort.length, new BigDecimal("0.00"));
+		}
 	}
 
 	private boolean initTransactionHasReturns(BigDecimal[] amounts) {
