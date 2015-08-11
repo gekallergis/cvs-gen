@@ -7,11 +7,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import se.customervalue.cvs.abstraction.dataaccess.*;
 import se.customervalue.cvs.abstraction.externalservice.ExchangeRateService.ExchangeRateService;
+import se.customervalue.cvs.abstraction.externalservice.GraphGenerationService.GraphGenerationService;
+import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.AnalysisData;
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.ProductGenerator;
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.exception.CalculationException;
 import se.customervalue.cvs.api.representation.GennyRequestRepresentation;
 import se.customervalue.cvs.domain.*;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("newBiz")
@@ -28,24 +32,84 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 	private TransactionRepository transactionRepository;
 
 	@Autowired
-	private CurrencyRepository currencyRepository;
-
-	@Autowired
 	private CompanyRepository companyRepository;
 
 	@Autowired
 	private ExchangeRateService fixer;
+
+	@Autowired
+	private GraphGenerationService jfchart;
 
 	@Override @Async
 	public void start(GennyRequestRepresentation request, int newReportId) {
 		try {
 			log.debug("[NewBiz] Started generation!");
 
-			// TODO: Perform analysis
-			calculate(request);
+			// Perform analysis
+			AnalysisDataNewBiz analysisData = (AnalysisDataNewBiz)calculate(request);
 
-			// TODO: Generate graphs
+			// Generate graphs
+			List<Color> colors = new ArrayList<>();
+			Color colorBlue = new Color(83, 130, 187);
+			Color colorRed = new Color(189, 80, 79);
+			Color colorYellow = new Color(252, 191, 42);
+			Color colorGreen = new Color(155, 186, 94);
+			Color colorPurple = new Color(128, 101, 159);
+			colors.add(colorRed);
+			colors.add(colorGreen);
+			colors.add(colorPurple);
+			colors.add(colorBlue);
+			colors.add(colorYellow);
+
+			// Chart #1 - Number of unique customers that have purchased per month
+			String chartTitle = "Antal unika köpande kunder per månad";
+			String xAxisTitle = "Μånad";
+			String yAxisTitle = "Antal unika kundnummer";
+			String[] rowKeys = {"Antal nya kunder", "Antal återkommande kunder"};
+			String[] columnKeys = analysisData.getPrettyMonthList();
+			double[][] plotData = new double[2][];
+			plotData[0] = analysisData.getNykundAsDouble();
+			plotData[1] = analysisData.getOldkundAsDouble();
+
+			String chartfileName = jfchart.createStackedBarChart(chartTitle, xAxisTitle, yAxisTitle, rowKeys, columnKeys, plotData, colors);
+
+			// TODO: Chart #2 - Proportion new customers that have purchased per month
+
+			// TODO: Chart #3 - Sales per month
+
+			// TODO: Chart #4 - The new customer’s share of the month's sales
+
+			// TODO: Chart #5 - Average sales per customer for the new and recurring customers
+
+			// TODO: Chart #6 - Proportion of the new customers that have repurchased (once or more) within 3, 12 and 24 months, and number of new customers
+
+			// TODO: Chart #7 - Repurchase (accumulative) percentage of initial sales after 3, 12 and 24 months, and the initial sales per new customer group
+
+			// TODO: Chart #8 - Average number of purchases per new customer, initial and accumulated over 3, 12 and 24 months
+
+			// TODO: Chart #9 - Average sales of purchases per new customers, initially and accumulated over 3, 12 and 24 months
+
+//			String[] rowKeys = {"Antal nya kunder", "Antal återkommande kunder", "Antal återkommande kunder 2", "Antal återkommande kunder 3"};
+//
+//			double[] data = {1.2f, 2.3f, 1.8f, 2.0f};
+//			String name = jfchart.createBarChart("Test Chart", "X Axis Test Title", "Y Axis Test Title", rowKeys[0], rowKeys, data, colorBlue);
+//			log.warn("[DE] " + name);
+//
+//			double[][] data2D = {{1.2f, 2.3f, 1.8f, 2.0f}, {2.2f, 1.3f, 2.8f, 1.0f}};
+//
+//			name = jfchart.createDualLineBarChart("Test Chart", "X Axis Test Title", "Y1 Axis Test Title", "Y2 Axis Test Title", rowKeys, rowKeys, data2D, colors);
+//			log.warn("[DE] " + name);
+//
+//			name = jfchart.createLineChart("Test Chart", "X Axis Test Title", "Y1 Axis Test Title", rowKeys, rowKeys, data2D, colors);
+//			log.warn("[DE] " + name);
+//
+//			double[][] data2Dn = {{1.2f, 2.3f, 1.8f, 2.0f}, {2.2f, 1.3f, 2.8f, 1.0f}, {3.2f, 5.3f, 3.8f, 4.0f}, {1.2f, 4.3f, 6.8f, 7.0f}};
+//			name = jfchart.createStackedBarChart("Test Chart", "X Axis Test Title", "Y1 Axis Test Title", rowKeys, rowKeys, data2Dn, colors);
+//			log.warn("[DE] " + name);
+
 			// TODO: Generate PDF
+
+			// TODO: Cleanup temp files
 
 			// Update report status to Ready and reduce owned products
 			Report generatedReport = reportRepository.findByReportId(newReportId);
@@ -55,8 +119,10 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			OwnedProduct requestOwnedProduct = ownedProductRepository.findByOwnedProductId(request.getOwnedProductId());
 			requestOwnedProduct.setQuantity(requestOwnedProduct.getQuantity() - 1);
 			ownedProductRepository.save(requestOwnedProduct);
+
+			log.debug("[NewBiz] Generation Complete!");
 		} catch (Exception ex) {
-			log.error("[NewBiz] Error Analyzing Data!");
+			log.error("[NewBiz] Error Generating Report!");
 			ex.printStackTrace();
 			Report generatedReport = reportRepository.findByReportId(newReportId);
 			generatedReport.setStatus(ReportStatus.ERROR);
@@ -65,7 +131,7 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 	}
 
 	@Override
-	public void calculate(GennyRequestRepresentation request) throws CalculationException {
+	public AnalysisData calculate(GennyRequestRepresentation request) throws CalculationException {
 		try {
 			log.debug("[NewBiz] Calculating!");
 
@@ -74,7 +140,7 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 
 			// Process ORD_MON
 			List<Object[]> results = transactionRepository.getORD_MON(viewName);
-			NewBizAnalysisData analysisData = new NewBizAnalysisData(results.size());
+			AnalysisDataNewBiz analysisData = new AnalysisDataNewBiz(results.size());
 			analysisData.setOrd_mon(results);
 
 			// Process ACK_OMS and ORD_OMS
@@ -205,95 +271,7 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			// Process ANTKUND24
 			analysisData.updateAntkund24();
 
-//			res = transactionRepository.getACK_OMS("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] Year " + re[IDX.YEAR]);
-//				log.warn("[NewBiz] Month " + re[IDX.MONTH]);
-//				log.warn("[NewBiz] ORD_OMS " + re[IDX.ORD_OMS]);
-//				log.warn("[NewBiz] ACK_OMS " + re[IDX.ACK_OMS]);
-//			}
-//
-//			res = transactionRepository.getORD_MON("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] Year " + re[IDX.YEAR]);
-//				log.warn("[NewBiz] Month " + re[IDX.MONTH]);
-//			}
-//
-//			res = transactionRepository.getACK_ANTTRANS("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] Year " + re[IDX.YEAR]);
-//				log.warn("[NewBiz] Month " + re[IDX.MONTH]);
-//				log.warn("[NewBiz] ANTTRANS " + re[IDX.ANTTRANS]);
-//				log.warn("[NewBiz] ACK_ANTTRANS " + re[IDX.ACK_ANTTRANS]);
-//			}
-//
-//			res = transactionRepository.getACK_KUNDNUM("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] Year " + re[IDX.YEAR]);
-//				log.warn("[NewBiz] Month " + re[IDX.MONTH]);
-//				log.warn("[NewBiz] ANTKUND " + re[IDX.ANTKUND]);
-//				log.warn("[NewBiz] ACK_KUNDNUM " + re[IDX.ACK_KUNDNUM]);
-//			}
-//
-//			res = transactionRepository.getACK_MAX_DATE("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] Year " + re[IDX.YEAR]);
-//				log.warn("[NewBiz] Month " + re[IDX.MONTH]);
-//				log.warn("[NewBiz] ACK_MAX_DATE_YEAR " + re[IDX.ACK_MAX_DATE_YEAR]);
-//			}
-//
-//			res = transactionRepository.getACK_MIN_DATE("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] ACK_MIN_DATE_YEAR " + re[IDX.ACK_MIN_DATE_YEAR]);
-//				log.warn("[NewBiz] ACK_MIN_DATE_MONTH " + re[IDX.ACK_MIN_DATE_MONTH]);
-//				log.warn("[NewBiz] ACK_MIN_DATE_DAY " + re[IDX.ACK_MIN_DATE_DAY]);
-//			}
-//
-//			res = transactionRepository.getACK_NYKUND("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] Year " + re[IDX.YEAR]);
-//				log.warn("[NewBiz] Month " + re[IDX.MONTH]);
-//				log.warn("[NewBiz] ACK_NYKUND " + re[IDX.ACK_NYKUND]);
-//				log.warn("[NewBiz] FIRST_OMS " + re[IDX.FIRST_OMS]);
-//				log.warn("[NewBiz] NYKUND " + re[IDX.NYKUND]);
-//			}
-//
-//			res = transactionRepository.getACK_OMS("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] Year " + re[IDX.YEAR]);
-//				log.warn("[NewBiz] Month " + re[IDX.MONTH]);
-//				log.warn("[NewBiz] ORD_OMS " + re[IDX.ORD_OMS]);
-//				log.warn("[NewBiz] ACK_OMS " + re[IDX.ACK_OMS]);
-//			}
-//
-//			res = transactionRepository.getANTRETUR("CompanyATransactions");
-//			for (Object[] re : res) {
-//				log.warn("[NewBiz] Year " + re[IDX.YEAR]);
-//				log.warn("[NewBiz] Month " + re[IDX.MONTH]);
-//				log.warn("[NewBiz] ANTRETUR " + re[IDX.ANTRETUR]);
-//			}
-//
-//			Currency reportCurrency = currencyRepository.findByCurrencyId(request.getCurrencyId());
-//
-//			BigDecimal sum = new BigDecimal("0.00");
-//			final int pageLimit = 10;
-//			int pageNumber = 0;
-//
-//			fixer.setBaseCurrency(reportCurrency);
-//			Page<Transaction> page = transactionRepository.findAll(new PageRequest(pageNumber, pageLimit));
-//			while (page.hasNext()) {
-//				for (Transaction transaction : page.getContent()) {
-//					sum = sum.add(fixer.convertToBase(transaction.getCurrency(), transaction.getAmount()));
-//				}
-//				page = transactionRepository.findAll(new PageRequest(++pageNumber, pageLimit));
-//			}
-//
-//			// process last page
-//			for (Transaction transaction : page.getContent()) {
-//				sum = sum.add(fixer.convertToBase(transaction.getCurrency(), transaction.getAmount()));
-//			}
-//
-//			log.warn("[NewBiz] Total is " + sum + " " + reportCurrency.getISO4217() + "!");
+			return analysisData;
 		} catch (Exception ex) {
 			log.error("[NewBiz] Could not complete data analysis!");
 			ex.printStackTrace();

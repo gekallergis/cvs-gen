@@ -7,5 +7,5 @@ import se.customervalue.cvs.api.representation.GennyRequestRepresentation;
 public interface ProductGenerator {
 	@Async
 	void start(GennyRequestRepresentation request, int newReportId);
-	void calculate(GennyRequestRepresentation request) throws CalculationException;
+	AnalysisData calculate(GennyRequestRepresentation request) throws CalculationException;
 }

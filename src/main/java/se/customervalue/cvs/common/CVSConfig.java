@@ -32,6 +32,11 @@ public final class CVSConfig  {
 	public static final String TEMP_FS_STORE = "c:/cvs/temp";
 	// public static final String TEMP_FS_STORE = "/home/gkallergis/cvs/temp";
 
+	// Default Chart Configuration
+	public static final int MAX_CHART_PERIODS = 36;
+	public static final int CHART_HEIGHT = 500;
+	public static final int CHART_WIDTH = 1000;
+
 	public static final String[] months = {"","January","February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
 

@@ -1,15 +1,13 @@
 package se.customervalue.cvs.dependency.externalservice.ProductGenerator.NewBiz;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.AnalysisData;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class NewBizAnalysisData {
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
+public class AnalysisDataNewBiz extends AnalysisData {
 	private Map<Date, Integer> ord_mon;
 	private BigDecimal[] ack_oms;
 	private int[] ack_nykund;
@@ -60,7 +58,7 @@ public class NewBizAnalysisData {
 	private int[] antretur24;
 	private int[] antkund24;
 
-	public NewBizAnalysisData(int size) {
+	public AnalysisDataNewBiz(int size) {
 		this.ord_mon = new HashMap<>(size);
 		this.ack_oms = new BigDecimal[size];
 		Arrays.fill(this.ack_oms, new BigDecimal("0.00"));
@@ -465,89 +463,27 @@ public class NewBizAnalysisData {
 		}
 	}
 
-	private void zeroNonApplicableDates(int duration, int[] array) {
-		if(array.length < duration) {
-			Arrays.fill(array, 0);
-		} else {
-			Arrays.fill(array, nyk_cohort.length - (duration - 1), nyk_cohort.length, 0);
+	public String[] getPrettyMonthList() {
+		String[] dateList = new String[ord_mon.size()];
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM-yy");
+		ord_mon.forEach((date, index) -> dateList[index.intValue()] = sdf.format(date));
+		return dateList;
+	}
+
+	public double[] getNykundAsDouble() {
+		double[] array = new double[nykund.length];
+		for(int i = 0; i < nykund.length; i++) {
+			array[i] = (double)nykund[i];
 		}
+		return array;
 	}
 
-	private void zeroNonApplicableDates(int duration, Object[] array) {
-		if(array.length < duration) {
-			Arrays.fill(array, new BigDecimal("0.00"));
-		} else {
-			Arrays.fill(array, nyk_cohort.length - (duration - 1), nyk_cohort.length, new BigDecimal("0.00"));
+	public double[] getOldkundAsDouble() {
+		double[] array = new double[oldkund.length];
+		for(int i = 0; i < oldkund.length; i++) {
+			array[i] = (double)oldkund[i];
 		}
-	}
-
-	private boolean initTransactionHasReturns(BigDecimal[] amounts) {
-		boolean initHasReturns = false;
-		boolean foundCompleteRefund = false;
-		for(int i = amounts.length - 1; i > 0; i--) {
-			if(amounts[i].compareTo(BigDecimal.ZERO) < 0) {
-				for(int j = i - 1; j >= 0; j--) {
-					if(amounts[i].abs().compareTo(amounts[j]) == 0) {
-						if(j == 0) {
-							initHasReturns = true;
-						} else {
-							foundCompleteRefund = true;
-							break;
-						}
-					}
-				}
-
-				if(!foundCompleteRefund) {
-					for(int j = i - 1; j >= 0; j--) {
-						if (amounts[i].abs().compareTo(amounts[j]) < 0) {
-							if (j == 0) {
-								initHasReturns = true;
-							} else {
-								break;
-							}
-						}
-					}
-				}
-				foundCompleteRefund = false;
-			}
-		}
-
-		return initHasReturns;
-	}
-
-	private BigDecimal[] convertAmounts(String[] stringAmounts) {
-		BigDecimal[] amounts = new BigDecimal[stringAmounts.length];
-		for(int i = 0; i < stringAmounts.length; i++) {
-			amounts[i] = new BigDecimal(stringAmounts[i]);
-		}
-
-		return amounts;
-	}
-
-	private Date toDate(int year, int month, int day) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(Calendar.YEAR, year);
-		calendar.set(Calendar.MONTH, month - 1);
-		calendar.set(Calendar.DAY_OF_MONTH, day);
-		return calendar.getTime();
-	}
-
-	private Date toDate(int year, int month) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(Calendar.YEAR, year);
-		calendar.set(Calendar.MONTH, month - 1);
-		calendar.set(Calendar.DAY_OF_MONTH, 1);
-		return calendar.getTime();
-	}
-
-	private int getDateIndex(Date date) {
-		return ord_mon.get(date);
-	}
-
-	public Logger getLog() {
-		return log;
+		return array;
 	}
 
 	public Map<Date, Integer> getOrd_mon() {
@@ -744,5 +680,86 @@ public class NewBizAnalysisData {
 
 	public int[] getAntkund24() {
 		return antkund24;
+	}
+
+	private void zeroNonApplicableDates(int duration, int[] array) {
+		if(array.length < duration) {
+			Arrays.fill(array, 0);
+		} else {
+			Arrays.fill(array, nyk_cohort.length - (duration - 1), nyk_cohort.length, 0);
+		}
+	}
+
+	private void zeroNonApplicableDates(int duration, Object[] array) {
+		if(array.length < duration) {
+			Arrays.fill(array, new BigDecimal("0.00"));
+		} else {
+			Arrays.fill(array, nyk_cohort.length - (duration - 1), nyk_cohort.length, new BigDecimal("0.00"));
+		}
+	}
+
+	private boolean initTransactionHasReturns(BigDecimal[] amounts) {
+		boolean initHasReturns = false;
+		boolean foundCompleteRefund = false;
+		for(int i = amounts.length - 1; i > 0; i--) {
+			if(amounts[i].compareTo(BigDecimal.ZERO) < 0) {
+				for(int j = i - 1; j >= 0; j--) {
+					if(amounts[i].abs().compareTo(amounts[j]) == 0) {
+						if(j == 0) {
+							initHasReturns = true;
+						} else {
+							foundCompleteRefund = true;
+							break;
+						}
+					}
+				}
+
+				if(!foundCompleteRefund) {
+					for(int j = i - 1; j >= 0; j--) {
+						if (amounts[i].abs().compareTo(amounts[j]) < 0) {
+							if (j == 0) {
+								initHasReturns = true;
+							} else {
+								break;
+							}
+						}
+					}
+				}
+				foundCompleteRefund = false;
+			}
+		}
+
+		return initHasReturns;
+	}
+
+	private BigDecimal[] convertAmounts(String[] stringAmounts) {
+		BigDecimal[] amounts = new BigDecimal[stringAmounts.length];
+		for(int i = 0; i < stringAmounts.length; i++) {
+			amounts[i] = new BigDecimal(stringAmounts[i]);
+		}
+
+		return amounts;
+	}
+
+	private Date toDate(int year, int month, int day) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month - 1);
+		calendar.set(Calendar.DAY_OF_MONTH, day);
+		return calendar.getTime();
+	}
+
+	private Date toDate(int year, int month) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month - 1);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		return calendar.getTime();
+	}
+
+	private int getDateIndex(Date date) {
+		return ord_mon.get(date);
 	}
 }
