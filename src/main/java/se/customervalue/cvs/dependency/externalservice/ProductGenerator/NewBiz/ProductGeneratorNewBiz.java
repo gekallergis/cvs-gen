@@ -12,9 +12,13 @@ import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.Analysi
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.ProductGenerator;
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.exception.CalculationException;
 import se.customervalue.cvs.api.representation.GennyRequestRepresentation;
+import se.customervalue.cvs.common.CVSConfig;
 import se.customervalue.cvs.domain.*;
 
 import java.awt.*;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +53,7 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			AnalysisDataNewBiz analysisData = (AnalysisDataNewBiz)calculate(request);
 
 			// Generate graphs
+			String[] charts = new String[9];
 			List<Color> colors = new ArrayList<>();
 			Color colorBlue = new Color(83, 130, 187);
 			Color colorRed = new Color(189, 80, 79);
@@ -71,45 +76,129 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			plotData[0] = analysisData.getNykundAsDouble();
 			plotData[1] = analysisData.getOldkundAsDouble();
 
-			String chartfileName = jfchart.createStackedBarChart(chartTitle, xAxisTitle, yAxisTitle, rowKeys, columnKeys, plotData, colors);
+			String chartFileName = jfchart.createStackedBarChart(chartTitle, xAxisTitle, yAxisTitle, rowKeys, columnKeys, plotData, colors);
+			charts[0] = chartFileName;
 
-			// TODO: Chart #2 - Proportion new customers that have purchased per month
+			// Chart #2 - Proportion of new customers that have purchased per month
+			chartTitle = "Andel nya köpande kunder per månad";
+			xAxisTitle = "Μånad";
+			yAxisTitle = "Antel kunder";
+			String rowKey = "Andel nya kunder";
+			plotData[0] = analysisData.getProportionOfNewCustomers();
 
-			// TODO: Chart #3 - Sales per month
+			chartFileName = jfchart.createBarChart(chartTitle, xAxisTitle, yAxisTitle, rowKey, columnKeys, plotData[0], colorBlue);
+			charts[1] = chartFileName;
 
-			// TODO: Chart #4 - The new customer’s share of the month's sales
+			// Chart #3 - Sales per month
+			chartTitle = "Försäljning per månad";
+			xAxisTitle = "Μånad";
+			yAxisTitle = "Försäljningsbelopp";
+			rowKeys = new String[]{"Initial försäljning till månadens nykunder", "Ytterligare försäljning till månadens nykunder", "Försäljning återkommande kunder"};
+			plotData = new double[3][];
+			plotData[0] = analysisData.getFirstOmsAsDouble();
+			plotData[1] = analysisData.getNewCustomersAdditionalSales();
+			plotData[2] = analysisData.getRecurringCustomersSales();
 
-			// TODO: Chart #5 - Average sales per customer for the new and recurring customers
+			chartFileName = jfchart.createStackedBarChart(chartTitle, xAxisTitle, yAxisTitle, rowKeys, columnKeys, plotData, colors);
+			charts[2] = chartFileName;
 
-			// TODO: Chart #6 - Proportion of the new customers that have repurchased (once or more) within 3, 12 and 24 months, and number of new customers
+			// Chart #4 - The new customer’s share of the month's sales
+			chartTitle = "De nya kundernas andel av månadens försäljning";
+			xAxisTitle = "Μånad";
+			yAxisTitle = "Försäljningsandel";
+			rowKey = "Försäljningsandel nya kunder";
+			plotData[0] = analysisData.getNewCustomersShareOnSales();
 
-			// TODO: Chart #7 - Repurchase (accumulative) percentage of initial sales after 3, 12 and 24 months, and the initial sales per new customer group
+			chartFileName = jfchart.createBarChart(chartTitle, xAxisTitle, yAxisTitle, rowKey, columnKeys, plotData[0], colorBlue);
+			charts[3] = chartFileName;
 
-			// TODO: Chart #8 - Average number of purchases per new customer, initial and accumulated over 3, 12 and 24 months
+			// Chart #5 - Average sales per customer for the new and recurring customers
+			chartTitle = "Genomsnittlig försäljning per kund för nya resp. återkommande kunder";
+			xAxisTitle = "Μånad";
+			yAxisTitle = "Genomsnittlig försäljning";
+			rowKeys = new String[]{"Nya kunder", "Återkommande kunder"};
+			plotData = new double[2][];
+			plotData[0] = analysisData.getAverageSalesPerNewCustomer();
+			plotData[1] = analysisData.getAverageSalesPerRecurringCustomer();
 
-			// TODO: Chart #9 - Average sales of purchases per new customers, initially and accumulated over 3, 12 and 24 months
+			chartFileName = jfchart.createLineChart(chartTitle, xAxisTitle, yAxisTitle, rowKeys, columnKeys, plotData, colors);
+			charts[4] = chartFileName;
 
-//			String[] rowKeys = {"Antal nya kunder", "Antal återkommande kunder", "Antal återkommande kunder 2", "Antal återkommande kunder 3"};
-//
-//			double[] data = {1.2f, 2.3f, 1.8f, 2.0f};
-//			String name = jfchart.createBarChart("Test Chart", "X Axis Test Title", "Y Axis Test Title", rowKeys[0], rowKeys, data, colorBlue);
-//			log.warn("[DE] " + name);
-//
-//			double[][] data2D = {{1.2f, 2.3f, 1.8f, 2.0f}, {2.2f, 1.3f, 2.8f, 1.0f}};
-//
-//			name = jfchart.createDualLineBarChart("Test Chart", "X Axis Test Title", "Y1 Axis Test Title", "Y2 Axis Test Title", rowKeys, rowKeys, data2D, colors);
-//			log.warn("[DE] " + name);
-//
-//			name = jfchart.createLineChart("Test Chart", "X Axis Test Title", "Y1 Axis Test Title", rowKeys, rowKeys, data2D, colors);
-//			log.warn("[DE] " + name);
-//
-//			double[][] data2Dn = {{1.2f, 2.3f, 1.8f, 2.0f}, {2.2f, 1.3f, 2.8f, 1.0f}, {3.2f, 5.3f, 3.8f, 4.0f}, {1.2f, 4.3f, 6.8f, 7.0f}};
-//			name = jfchart.createStackedBarChart("Test Chart", "X Axis Test Title", "Y1 Axis Test Title", rowKeys, rowKeys, data2Dn, colors);
-//			log.warn("[DE] " + name);
+			// Chart #6 - Proportion of the new customers that have repurchased (once or more) within 3, 12 and 24 months, and number of new customers
+			chartTitle = "Andel av de nya kunderna som återkommit med köp inom 3, 12 respektive 24 månader, samt antal nya kunder per månad";
+			xAxisTitle = "Nykundscohort";
+			yAxisTitle = "Antal återkommande kunder";
+			String y2AxisTitle = "Antal nya kunder";
+			rowKeys = new String[]{"Inom 3 månader", "Inom 12 månader", "Inom 24 månader", "Antal nya kunder"};
+			plotData = new double[4][];
+			plotData[0] = analysisData.getProportionOfNewCustomersRepurchasing(AnalysisDataNewBiz.THREE_MONTH_PERIOD);
+			plotData[1] = analysisData.getProportionOfNewCustomersRepurchasing(AnalysisDataNewBiz.TWELVE_MONTH_PERIOD);
+			plotData[2] = analysisData.getProportionOfNewCustomersRepurchasing(AnalysisDataNewBiz.TWENTY_FOUR_MONTH_PERIOD);
+			plotData[3] = analysisData.getAntkund0AsDouble();
+
+			chartFileName = jfchart.createDualLineBarChart(chartTitle, xAxisTitle, yAxisTitle, y2AxisTitle, rowKeys, columnKeys, plotData, colors);
+			charts[5] = chartFileName;
+
+			// Chart #7 - Repurchase (accumulative) percentage of initial sales after 3, 12 and 24 months, and the initial sales per new customer group
+			chartTitle = "Återköp (ackumulerat) i procent av initial försäljning efter 3, 12 och 24 månader, samt initial försäljning per nykundscohort";
+			xAxisTitle = "Nykundscohort";
+			yAxisTitle = "Återköp i procent av initial försäljning";
+			y2AxisTitle = "Initial försäljning";
+			rowKeys = new String[]{"3 månaders period", "3 månaders period", "3 månaders period", "Initial försäljning"};
+			plotData = new double[4][];
+			plotData[0] = analysisData.getRepurchasePercentageOfInitialSales(AnalysisDataNewBiz.THREE_MONTH_PERIOD);
+			plotData[1] = analysisData.getRepurchasePercentageOfInitialSales(AnalysisDataNewBiz.TWELVE_MONTH_PERIOD);
+			plotData[2] = analysisData.getRepurchasePercentageOfInitialSales(AnalysisDataNewBiz.TWENTY_FOUR_MONTH_PERIOD);
+			plotData[3] = analysisData.getOrdOms0AsDouble();
+
+			chartFileName = jfchart.createDualLineBarChart(chartTitle, xAxisTitle, yAxisTitle, y2AxisTitle, rowKeys, columnKeys, plotData, colors);
+			charts[6] = chartFileName;
+
+			// Chart #8 - Average number of purchases per new customer, initial and accumulated over 3, 12 and 24 months
+			chartTitle = "Genomsnittligt antal köp per ny kund, initialt samt ackumulerat över 3, 12 och 24 månader";
+			xAxisTitle = "Nykundscohort";
+			yAxisTitle = "Antal köp per ny kund";
+			rowKeys = new String[]{"Initialt", "Efter 3 månader", "Efter 12 månader", "Efter 24 månader"};
+			plotData = new double[4][];
+			plotData[0] = analysisData.getAverageNumberOfPurchasesPerNewCustomer(AnalysisDataNewBiz.INITIAL_PERIOD);
+			plotData[1] = analysisData.getAverageNumberOfPurchasesPerNewCustomer(AnalysisDataNewBiz.THREE_MONTH_PERIOD);
+			plotData[2] = analysisData.getAverageNumberOfPurchasesPerNewCustomer(AnalysisDataNewBiz.TWELVE_MONTH_PERIOD);
+			plotData[3] = analysisData.getAverageNumberOfPurchasesPerNewCustomer(AnalysisDataNewBiz.TWENTY_FOUR_MONTH_PERIOD);
+
+			chartFileName = jfchart.createLineChart(chartTitle, xAxisTitle, yAxisTitle, rowKeys, columnKeys, plotData, colors);
+			charts[7] = chartFileName;
+
+			// Chart #9 - Average sales of purchases per new customers, initially and accumulated over 3, 12 and 24 months
+			chartTitle = "Genomsnittlig försäljning per ny kund, initialt samt ackumulerat över 3, 12 och 24 månader";
+			xAxisTitle = "Nykundscohort";
+			yAxisTitle = "Snittförsäljning per ny kund";
+			rowKeys = new String[]{"Initialt", "Efter 3 månader", "Efter 12 månader", "Efter 24 månader"};
+			plotData = new double[4][];
+			plotData[0] = analysisData.getAverageSalesPerNewCustomerCohort(AnalysisDataNewBiz.INITIAL_PERIOD);
+			plotData[1] = analysisData.getAverageSalesPerNewCustomerCohort(AnalysisDataNewBiz.THREE_MONTH_PERIOD);
+			plotData[2] = analysisData.getAverageSalesPerNewCustomerCohort(AnalysisDataNewBiz.TWELVE_MONTH_PERIOD);
+			plotData[3] = analysisData.getAverageSalesPerNewCustomerCohort(AnalysisDataNewBiz.TWENTY_FOUR_MONTH_PERIOD);
+
+			chartFileName = jfchart.createLineChart(chartTitle, xAxisTitle, yAxisTitle, rowKeys, columnKeys, plotData, colors);
+			charts[8] = chartFileName;
+
 
 			// TODO: Generate PDF
 
-			// TODO: Cleanup temp files
+
+			// Cleanup temp files
+			try{
+				for (String chart : charts) {
+					File file = new File(CVSConfig.TEMP_FS_STORE + "/" + chart + ".png");
+					if(!file.delete()) {
+						log.error("[NewBiz] Error Deleting Generated Graphs!");
+					}
+				}
+			} catch(Exception e) {
+				log.error("[NewBiz] Error Deleting Generated Graphs!");
+				e.printStackTrace();
+			}
+
 
 			// Update report status to Ready and reduce owned products
 			Report generatedReport = reportRepository.findByReportId(newReportId);

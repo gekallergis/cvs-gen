@@ -4,10 +4,16 @@ import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.Analysi
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class AnalysisDataNewBiz extends AnalysisData {
+	public static final int THREE_MONTH_PERIOD = 0;
+	public static final int TWELVE_MONTH_PERIOD = 1;
+	public static final int TWENTY_FOUR_MONTH_PERIOD = 2;
+	public static final int INITIAL_PERIOD = 3;
+
 	private Map<Date, Integer> ord_mon;
 	private BigDecimal[] ack_oms;
 	private int[] ack_nykund;
@@ -482,6 +488,240 @@ public class AnalysisDataNewBiz extends AnalysisData {
 		double[] array = new double[oldkund.length];
 		for(int i = 0; i < oldkund.length; i++) {
 			array[i] = (double)oldkund[i];
+		}
+		return array;
+	}
+
+	public double[] getFirstOmsAsDouble() {
+		double[] array = new double[first_oms.length];
+		for(int i = 0; i < first_oms.length; i++) {
+			array[i] = first_oms[i].doubleValue();
+		}
+		return array;
+	}
+
+	public double[] getAntkund0AsDouble() {
+		double[] array = new double[antkund0.length];
+		for(int i = 0; i < antkund0.length; i++) {
+			array[i] = (double)antkund0[i];
+		}
+		return array;
+	}
+
+	public double[] getOrdOms0AsDouble() {
+		double[] array = new double[ord_oms0.length];
+		for(int i = 0; i < ord_oms0.length; i++) {
+			array[i] = ord_oms0[i].doubleValue();
+		}
+		return array;
+	}
+
+	public double[] getProportionOfNewCustomers() {
+		double[] array = new double[nykund.length];
+		for(int i = 0; i < nykund.length; i++) {
+			array[i] = ((double)nykund[i] / (double)antkund[i]) * 100.0f;
+		}
+		return array;
+	}
+
+	public double[] getNewCustomersAdditionalSales() {
+		double[] array = new double[nykund_oms.length];
+		for(int i = 0; i < nykund_oms.length; i++) {
+			array[i] = nykund_oms[i].subtract(first_oms[i]).doubleValue();
+		}
+		return array;
+	}
+
+	public double[] getRecurringCustomersSales() {
+		double[] array = new double[ord_oms.length];
+		for(int i = 0; i < ord_oms.length; i++) {
+			array[i] = ord_oms[i].subtract(first_oms[i]).doubleValue();
+		}
+		return array;
+	}
+
+	public double[] getNewCustomersShareOnSales() {
+		double[] array = new double[nykund_oms.length];
+		for(int i = 0; i < nykund_oms.length; i++) {
+			array[i] = nykund_oms[i].divide(first_oms[i].add(oldkund_oms[i]), 2, RoundingMode.HALF_UP).doubleValue();
+		}
+		return array;
+	}
+
+	public double[] getAverageSalesPerNewCustomer() {
+		double[] array = new double[nykund_oms.length];
+		for(int i = 0; i < nykund_oms.length; i++) {
+			if(nykund[i] == 0) {
+				array[i] = 0.0f;
+			} else {
+				array[i] = nykund_oms[i].divide(new BigDecimal(nykund[i]), 2, RoundingMode.HALF_UP).doubleValue();
+			}
+		}
+		return array;
+	}
+
+	public double[] getAverageSalesPerRecurringCustomer() {
+		double[] array = new double[nykund_oms.length];
+		for(int i = 0; i < nykund_oms.length; i++) {
+			if(antkund[i] - nykund[i] == 0) {
+				array[i] = 0.0f;
+			} else {
+				array[i] = ord_oms[i].subtract(nykund_oms[i]).divide(new BigDecimal(antkund[i] - nykund[i]), 2, RoundingMode.HALF_UP).doubleValue();
+			}
+		}
+		return array;
+	}
+
+	public double[] getProportionOfNewCustomersRepurchasing(int periodLength) {
+		double[] array = new double[antkund0.length];
+		switch(periodLength) {
+			case THREE_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = (double)(antkund3[i]/antkund0[i]);
+					}
+				}
+				break;
+			case TWELVE_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = (double)(antkund12[i]/antkund0[i]);
+					}
+				}
+				break;
+			case TWENTY_FOUR_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = (double)(antkund24[i]/antkund0[i]);
+					}
+				}
+				break;
+		}
+		return array;
+	}
+
+	public double[] getRepurchasePercentageOfInitialSales(int periodLength) {
+		double[] array = new double[ord_oms0.length];
+		switch(periodLength) {
+			case THREE_MONTH_PERIOD:
+				for(int i = 0; i < ord_oms0.length; i++) {
+					if(ord_oms0[i].compareTo(BigDecimal.ZERO) == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = ord_oms3[i].divide(ord_oms0[i], 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+					}
+				}
+				break;
+			case TWELVE_MONTH_PERIOD:
+				for(int i = 0; i < ord_oms0.length; i++) {
+					if(ord_oms0[i].compareTo(BigDecimal.ZERO) == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = ord_oms12[i].divide(ord_oms0[i], 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+					}
+				}
+				break;
+			case TWENTY_FOUR_MONTH_PERIOD:
+				for(int i = 0; i < ord_oms0.length; i++) {
+					if(ord_oms0[i].compareTo(BigDecimal.ZERO) == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = ord_oms24[i].divide(ord_oms0[i], 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+					}
+				}
+				break;
+		}
+		return array;
+	}
+
+	public double[] getAverageNumberOfPurchasesPerNewCustomer(int periodLength) {
+		double[] array = new double[antkund0.length];
+		switch(periodLength) {
+			case INITIAL_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = (double)(anttrans0[i] / antkund0[i]);
+					}
+				}
+				break;
+			case THREE_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = (double)((anttrans0[i] + anttrans3[i]) / antkund0[0]);
+					}
+				}
+				break;
+			case TWELVE_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = (double)((anttrans0[i] + anttrans12[i]) / antkund0[0]);
+					}
+				}
+				break;
+			case TWENTY_FOUR_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = (double)((anttrans0[i] + anttrans24[i]) / antkund0[0]);
+					}
+				}
+				break;
+		}
+		return array;
+	}
+
+	public double[] getAverageSalesPerNewCustomerCohort(int periodLength) {
+		double[] array = new double[antkund0.length];
+		switch(periodLength) {
+			case INITIAL_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = ord_oms0[i].divide(new BigDecimal(antkund0[i]), 2, RoundingMode.HALF_UP).doubleValue();
+					}
+				}
+				break;
+			case THREE_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = ord_oms0[i].add(ord_oms3[i]).divide(new BigDecimal(antkund0[i]), 2, RoundingMode.HALF_UP).doubleValue();
+					}
+				}
+				break;
+			case TWELVE_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0 || ord_oms12[i].compareTo(BigDecimal.ZERO) == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = ord_oms0[i].add(ord_oms12[i]).subtract(ord_oms3[i]).divide(new BigDecimal(antkund0[i]), 2, RoundingMode.HALF_UP).doubleValue();
+					}
+				}
+				break;
+			case TWENTY_FOUR_MONTH_PERIOD:
+				for(int i = 0; i < antkund0.length; i++) {
+					if(antkund0[i] == 0 || ord_oms24[i].compareTo(BigDecimal.ZERO) == 0) {
+						array[i] = 0.0f;
+					} else {
+						array[i] = ord_oms0[i].add(ord_oms24[i]).subtract(ord_oms12[i]).divide(new BigDecimal(antkund0[i]), 2, RoundingMode.HALF_UP).doubleValue();
+					}
+				}
+				break;
 		}
 		return array;
 	}
