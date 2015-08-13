@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import se.customervalue.cvs.abstraction.dataaccess.*;
 import se.customervalue.cvs.abstraction.externalservice.ExchangeRateService.ExchangeRateService;
 import se.customervalue.cvs.abstraction.externalservice.GraphGenerationService.GraphGenerationService;
+import se.customervalue.cvs.abstraction.externalservice.PDFGenerationService.PDFGenerationService;
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.AnalysisData;
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.ProductGenerator;
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.exception.CalculationException;
@@ -17,8 +18,6 @@ import se.customervalue.cvs.domain.*;
 
 import java.awt.*;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +38,16 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 	private CompanyRepository companyRepository;
 
 	@Autowired
+	private CurrencyRepository currencyRepository;
+
+	@Autowired
 	private ExchangeRateService fixer;
 
 	@Autowired
 	private GraphGenerationService jfchart;
+
+	@Autowired
+	private PDFGenerationService pdf;
 
 	@Override @Async
 	public void start(GennyRequestRepresentation request, int newReportId) {
@@ -51,6 +56,10 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 
 			// Perform analysis
 			AnalysisDataNewBiz analysisData = (AnalysisDataNewBiz)calculate(request);
+
+			// Convert Currencies
+			Currency reportCurrency = currencyRepository.findByCurrencyId(request.getCurrencyId());
+			analysisData.convertCurrenciesTo(reportCurrency, fixer);
 
 			// Generate graphs
 			String[] charts = new String[9];
@@ -183,7 +192,8 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			charts[8] = chartFileName;
 
 
-			// TODO: Generate PDF
+			// Generate PDF
+			pdf.generateNewBizPDF(charts, request, newReportId);
 
 
 			// Cleanup temp files

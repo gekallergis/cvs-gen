@@ -1,12 +1,16 @@
 package se.customervalue.cvs.dependency.externalservice.ProductGenerator.NewBiz;
 
+import se.customervalue.cvs.abstraction.externalservice.ExchangeRateService.ExchangeRateService;
+import se.customervalue.cvs.abstraction.externalservice.ExchangeRateService.exception.ExchangeRateException;
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.AnalysisData;
+import se.customervalue.cvs.domain.Currency;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 
 public class AnalysisDataNewBiz extends AnalysisData {
 	public static final int THREE_MONTH_PERIOD = 0;
@@ -724,6 +728,22 @@ public class AnalysisDataNewBiz extends AnalysisData {
 				break;
 		}
 		return array;
+	}
+
+	public void convertCurrenciesTo(Currency newCurrency, ExchangeRateService converter) throws ExchangeRateException{
+		Currency defaultCurrency = new Currency("Swedish krona/kronor", "SEK", "752");
+		converter.setBaseCurrency(newCurrency);
+		for(int i = 0; i < ack_oms.length; i++) {
+			ack_oms[i] = converter.convertToBase(defaultCurrency, ack_oms[i]);
+			ord_oms[i] = converter.convertToBase(defaultCurrency, ord_oms[i]);
+			first_oms[i] = converter.convertToBase(defaultCurrency, first_oms[i]);
+			nykund_oms[i] = converter.convertToBase(defaultCurrency, nykund_oms[i]);
+			oldkund_oms[i] = converter.convertToBase(defaultCurrency, oldkund_oms[i]);
+			ord_oms0[i] = converter.convertToBase(defaultCurrency, ord_oms0[i]);
+			ord_oms3[i] = converter.convertToBase(defaultCurrency, ord_oms3[i]);
+			ord_oms12[i] = converter.convertToBase(defaultCurrency, ord_oms12[i]);
+			ord_oms24[i] = converter.convertToBase(defaultCurrency, ord_oms24[i]);
+		}
 	}
 
 	public Map<Date, Integer> getOrd_mon() {
