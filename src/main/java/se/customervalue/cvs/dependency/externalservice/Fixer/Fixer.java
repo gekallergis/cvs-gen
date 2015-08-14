@@ -21,7 +21,7 @@ public class Fixer implements ExchangeRateService {
 
 	@Override
 	public void setBaseCurrency(Currency base) throws ExchangeRateException {
-		log.warn("[Fixer] Setting base currency to " + base.getISO4217());
+		log.debug("[Fixer] Setting base currency to " + base.getISO4217());
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			HttpHeaders headers = new HttpHeaders();

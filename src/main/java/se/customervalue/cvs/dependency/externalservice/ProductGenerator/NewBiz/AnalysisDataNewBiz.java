@@ -1,5 +1,7 @@
 package se.customervalue.cvs.dependency.externalservice.ProductGenerator.NewBiz;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.customervalue.cvs.abstraction.externalservice.ExchangeRateService.ExchangeRateService;
 import se.customervalue.cvs.abstraction.externalservice.ExchangeRateService.exception.ExchangeRateException;
 import se.customervalue.cvs.abstraction.externalservice.ProductGenerator.AnalysisData;
@@ -13,6 +15,8 @@ import java.util.*;
 
 
 public class AnalysisDataNewBiz extends AnalysisData {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	public static final int THREE_MONTH_PERIOD = 0;
 	public static final int TWELVE_MONTH_PERIOD = 1;
 	public static final int TWENTY_FOUR_MONTH_PERIOD = 2;
@@ -328,6 +332,7 @@ public class AnalysisDataNewBiz extends AnalysisData {
 		for (Object[] row : dbData) {
 			int i = getDateIndex(toDate(((BigInteger)row[IDX.YEAR]).intValue(), ((BigInteger)row[IDX.MONTH]).intValue()));
 			String[] splitAmounts = ((String)row[IDX.ANTRETUR0_AMOUNTS]).split(",");
+			//log.warn("[] " + (String)row[IDX.ANTRETUR0_AMOUNTS]);
 			BigDecimal[] amounts = convertAmounts(splitAmounts);
 			if(initTransactionHasReturns(amounts)) {
 				antretur0[i]++;

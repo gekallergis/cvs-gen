@@ -55,13 +55,23 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			log.debug("[NewBiz] Started generation!");
 
 			// Perform analysis
+			long startTime = System.nanoTime();
 			AnalysisDataNewBiz analysisData = (AnalysisDataNewBiz)calculate(request);
+			long endTime = System.nanoTime();
+			long duration = (endTime - startTime) / 1000000;
+			log.debug("[PROFILING::" + request.getCompanyId() + "] Analysis: " + duration + "ms");
+
 
 			// Convert Currencies
 			Currency reportCurrency = currencyRepository.findByCurrencyId(request.getCurrencyId());
+			startTime = System.nanoTime();
 			analysisData.convertCurrenciesTo(reportCurrency, fixer);
+			endTime = System.nanoTime();
+			duration = (endTime - startTime) / 1000000;
+			log.debug("[PROFILING::" + request.getCompanyId() + "] Converting Currencies: " + duration + "ms");
 
 			// Generate graphs
+			startTime = System.nanoTime();
 			String[] charts = new String[9];
 			List<Color> colors = new ArrayList<>();
 			Color colorBlue = new Color(83, 130, 187);
@@ -191,9 +201,16 @@ public class ProductGeneratorNewBiz implements ProductGenerator {
 			chartFileName = jfchart.createLineChart(chartTitle, xAxisTitle, yAxisTitle, rowKeys, columnKeys, plotData, colors);
 			charts[8] = chartFileName;
 
+			endTime = System.nanoTime();
+			duration = (endTime - startTime) / 1000000;
+			log.debug("[PROFILING::" + request.getCompanyId() + "] Charting: " + duration + "ms");
 
 			// Generate PDF
+			startTime = System.nanoTime();
 			pdf.generateNewBizPDF(charts, request, newReportId);
+			endTime = System.nanoTime();
+			duration = (endTime - startTime) / 1000000;
+			log.debug("[PROFILING::" + request.getCompanyId() + "] PDF Generation: " + duration + "ms");
 
 
 			// Cleanup temp files
